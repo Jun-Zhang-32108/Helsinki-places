@@ -59,4 +59,4 @@ app.get('/api/items', (req, res, next) => {
 
 // start server
 
-app.listen(config.PORT, () => console.log('Server listening on port ' + port));
+app.listen(config.PORT, () => console.log('Server listening on port ' + config.PORT));
