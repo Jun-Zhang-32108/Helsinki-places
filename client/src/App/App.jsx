@@ -17,7 +17,7 @@ class App extends React.Component {
             <Router>
                 <Switch>
                     <Route exact path="/" component={HomePage} />
-                    <Route component={NotFound} status={404}/>
+                    <Route component={NotFound} /> // Display a 404 if unknown url is input
                 </Switch>
             </Router>
         );

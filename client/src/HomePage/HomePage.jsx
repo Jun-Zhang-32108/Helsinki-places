@@ -8,8 +8,8 @@ class HomePage extends React.Component {
         super(props);
 
         this.state = {
-            pager: {},
-            pageOfItems: []
+            pager: {},      // Used to keep track of pagination related information 
+            pageOfItems: [] // For storing a list of place information
         };
     }
 
@@ -41,8 +41,9 @@ class HomePage extends React.Component {
             <div className="card text-center m-3">
                 <h3 className="card-header">Places in Helsinki</h3>
                 <div>
+                    {/* Reader the list of places information as a table */}
                     <div>
-                    <UserTable users={pageOfItems} />          
+                    <UserTable users={pageOfItems} />        
                     </div>
                 </div>
                 <div className="card-footer pb-0 pt-3">
