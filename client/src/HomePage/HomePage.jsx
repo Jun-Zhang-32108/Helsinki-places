@@ -40,33 +40,7 @@ class HomePage extends React.Component {
         return (
             <div className="card text-center m-3">
                 <h3 className="card-header">Places in Helsinki</h3>
-                {/* <div className="card-body">
-                    {pageOfItems.map(item =>
-                        <p>
-                            <div class="row">
-                                <div class="col-sm">
-                                <div class="card">
-                                    <div class="card-body">
-                                    <h5 class="card-title">{item.name}</h5>
-                                    <p class="card-text">
-                                        <ul>
-                                        <li>{item.address}</li>
-                                        <li>Open: {item.opening_hours}</li>
-                                        <li>Exception: {item.opening_hours_exception}</li>
-                                        </ul>
-                                    </p>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                        </p>
-                    )}
-                </div> */}
                 <div>
-                    {/* <LoadButton
-                    onLoad={this.onLoadTables}
-                    title="Load"
-                    /> */}
                     <div>
                     <UserTable users={pageOfItems} />          
                     </div>

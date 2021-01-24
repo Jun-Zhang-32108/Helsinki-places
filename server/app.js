@@ -7,7 +7,6 @@ const http = require('http')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
-// const router = require('express').Router()
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -72,7 +71,6 @@ function getOpenTime(open_hours, today_index){
     {
         let today_open_hours = open_hours[today_index];
         try{
-            // logger.info('today_open_hours: '+ today_open_hours)
             if (today_open_hours.opens || today_open_hours.closes)
             {
                 open_time = today_open_hours.opens + ' - ' +  today_open_hours.closes;
