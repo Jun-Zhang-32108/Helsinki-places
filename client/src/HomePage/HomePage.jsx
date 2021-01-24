@@ -27,11 +27,11 @@ class HomePage extends React.Component {
         const page = parseInt(params.get('page')) || 1;
         if (page !== this.state.pager.currentPage) {
             trackPromise(
-            fetch(`/api/items?page=${page}`, { method: 'GET' })
-                .then(response => response.json())
-                .then(({pager, pageOfItems}) => {
-                    this.setState({ pager, pageOfItems });
-                }));
+                fetch(`/api/items?page=${page}`, { method: 'GET' })
+                    .then(response => response.json())
+                    .then(({pager, pageOfItems}) => {
+                        this.setState({ pager, pageOfItems });
+                    }));
         }
     }
 

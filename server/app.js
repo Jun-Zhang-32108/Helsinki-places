@@ -40,28 +40,35 @@ app.get('/api/items', (req, res, next) => {
         })
         resp.on('end', () => {
             placeData = JSON.parse(data)
-            const items = placeData.data.map(i => ({ 
-                id: (i.id ), 
-                name: (i.name.fi),
-                address: i.location.address.street_address + ',' + i.location.address.postal_code + ' ' + i.location.address.locality,  
-                opening_hours: getOpenTime(i.opening_hours.hours, today_indx),
-                opening_hours_exception: i.opening_hours.openinghours_exception || 'N/A'
-             }));
-             logger.info(items)
-        
-            // get pager object for specified page
-            const pager = paginate(placeData.meta.count, page);
-        
-            // get page of items from items array
-            const pageOfItems = items.slice(0);
-        
-            // return pager object and current page of items
-            return res.json({ pager, pageOfItems });
+            if(placeData.data && placeData.data!='' )
+            {
+                const items = placeData.data.map(i => ({ 
+                    id: (i.id ), 
+                    name: (i.name.fi),
+                    address: i.location.address.street_address + ',' + i.location.address.postal_code + ' ' + i.location.address.locality,  
+                    opening_hours: getOpenTime(i.opening_hours.hours, today_indx),
+                    opening_hours_exception: i.opening_hours.openinghours_exception || 'N/A'
+                }));
+                //  logger.info(items)
+            
+                // get pager object for specified page
+                const pager = paginate(placeData.meta.count, page);
+            
+                // get page of items from items array
+                const pageOfItems = items.slice(0);
+            
+                // return pager object and current page of items
+                return res.json({ pager, pageOfItems });
+            }
+            else{
+                logger.error('Wrong parameter!');
+                return res.status(400).send({ error: 'Wrong parameter! Please go back and try again!'});
+            }
         })
     })
     .on('error', err => {
-        logger.error("Error: ", err.message);
-        return response.status(404).end();
+        logger.error("Error:", err.message);
+        return res.status(404).send({ error: 'Cannot get place data! Please wait and try again!'});
     })
 });
 
@@ -91,7 +98,9 @@ function getOpenTime(open_hours, today_index){
     return open_time;
 }
 
+// Return {"error": "unknown endpoint"} if undefined endpoint is called
 app.use(middleware.unknownEndpoint)
+
 app.use(middleware.errorHandler)
 
 
