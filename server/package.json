@@ -1,5 +1,5 @@
 {
-    "name": "node-pagination-example",
+    "name": "Helsinki-places",
     "version": "1.0.0",
     "scripts": {
         "start": "NODE_ENV=production node index.js",
