@@ -3,13 +3,17 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     mode: 'development',
     resolve: {
-        extensions: ['.js', '.jsx']
+        extensions: ['.js', '.jsx', '.css']
     },
     module: {
         rules: [
             {
                 test: /\.jsx?$/,
                 use: 'babel-loader'
+            },
+            { 
+                test: /\.css$/, 
+                loader: "style-loader!css-loader" 
             }
         ]
     },

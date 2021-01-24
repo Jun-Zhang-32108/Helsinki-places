@@ -26,6 +26,11 @@ app.get('/api/items', (req, res, next) => {
     places_url = config.PLACES_URL +"?limit=" + page_size + "&start=" + start_index;
     let now = new Date();
     logger.info('place_url: '+ places_url)
+    let today_indx; // index for getting the correct open hours of today
+    if (now.getDay() == 0)
+        {today_indx = 6;}
+    else
+        {today_indx = now.getDay();}
 
     //Get data
     http
@@ -38,11 +43,12 @@ app.get('/api/items', (req, res, next) => {
             placeData = JSON.parse(data)
             const items = placeData.data.map(i => ({ 
                 id: (i.id ), 
-                name: 'Place ' + (i.name.en),
+                name: (i.name.fi),
                 address: i.location.address.street_address + ',' + i.location.address.postal_code + ' ' + i.location.address.locality,  
-                opening_hours: getOpenTime(i.opening_hours.hours, now.getDay()-1),
+                opening_hours: getOpenTime(i.opening_hours.hours, today_indx),
                 opening_hours_exception: i.opening_hours.openinghours_exception || 'N/A'
              }));
+             logger.info(items)
         
             // get pager object for specified page
             const pager = paginate(placeData.meta.count, page);
@@ -65,7 +71,9 @@ function getOpenTime(open_hours, today_index){
     if (open_hours)
     {
         let today_open_hours = open_hours[today_index];
-        if (today_open_hours.opens || today_open_hours.closes)
+        try{
+            // logger.info('today_open_hours: '+ today_open_hours)
+            if (today_open_hours.opens || today_open_hours.closes)
             {
                 open_time = today_open_hours.opens + ' - ' +  today_open_hours.closes;
             }
@@ -73,6 +81,12 @@ function getOpenTime(open_hours, today_index){
             {
                 open_time = 'unknown';
             }
+        }
+        catch(err){
+            logger.error('Error: ' + err)
+            open_time = 'unknown'
+        }
+
     }
     else
         {open_time = 'unknown';}
