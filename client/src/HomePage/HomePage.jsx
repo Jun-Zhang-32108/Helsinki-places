@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link,useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
 import { UserTable } from '../components';
 

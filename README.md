@@ -28,3 +28,6 @@ Then for the frontend :
 ## Contents
 * `client` frontend
 * `server` backend
+
+## Demo
+This web app is now deployed to Azure. You can try it out by click [here](http://52.156.250.103:9000/)!
