@@ -5,6 +5,6 @@ export const Header = (props) => (
     <th>Name</th>
     <th>Address</th>
     <th>Open hours</th>
-    <th>Ohen time exception</th>
+    <th>Open time exception</th>
   </tr>
 );

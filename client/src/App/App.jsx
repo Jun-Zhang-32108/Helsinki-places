@@ -4,10 +4,10 @@ import { HomePage } from '../HomePage';
 
 const NotFound = ({ location }) => (
     <div>
-      <h1>404 - Not Found for <code>{location.pathname}</code>!</h1>
-      <Link to="/">
+      <h1>404 - Not Found for <code>{location.pathname}</code>! Please go back!</h1>
+      {/* <Link to="/">
         Go Home
-      </Link>
+      </Link> */}
     </div>
   );
 
@@ -24,4 +24,4 @@ class App extends React.Component {
     }
 }
 
-export { App }; 
+export { App,NotFound }; 

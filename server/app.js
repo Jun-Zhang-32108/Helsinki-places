@@ -30,39 +30,52 @@ app.get('/api/items', (req, res, next) => {
         {today_indx = 6;}
     else
         {today_indx = now.getDay();}
+    
+    options = {
+        // In some extreme case, if the input parameters are some extreme values, for example, s
+        // tart=start=79999999999990, the open API we use will return HTML page instead of JSON. 
+        // So we limit the accept type to json.
+        headers: {'Accept':'application/json'}
+    }
 
     //Get data
     http
-    .get(places_url, resp => {
+    .get(places_url, options,resp => {
         let data = ''
         resp.on('data', chunk => {
             data += chunk
         })
         resp.on('end', () => {
-            placeData = JSON.parse(data)
-            if(placeData.data && placeData.data!='' )
-            {
-                const items = placeData.data.map(i => ({ 
-                    id: (i.id ), 
-                    name: (i.name.fi),
-                    address: i.location.address.street_address + ',' + i.location.address.postal_code + ' ' + i.location.address.locality,  
-                    opening_hours: getOpenTime(i.opening_hours.hours, today_indx),
-                    opening_hours_exception: i.opening_hours.openinghours_exception || 'N/A'
-                }));
-                //  logger.info(items)
-            
-                // get pager object for specified page
-                const pager = paginate(placeData.meta.count, page);
-            
-                // get page of items from items array
-                const pageOfItems = items.slice(0);
-            
-                // return pager object and current page of items
-                return res.json({ pager, pageOfItems });
+            try{
+                placeData = JSON.parse(data)
+                if(placeData.data && placeData.data!='' )
+                {
+                    const items = placeData.data.map(i => ({ 
+                        id: (i.id ), 
+                        name: (i.name.fi),
+                        address: i.location.address.street_address + ',' + i.location.address.postal_code + ' ' + i.location.address.locality,  
+                        opening_hours: getOpenTime(i.opening_hours.hours, today_indx),
+                        opening_hours_exception: i.opening_hours.openinghours_exception || 'N/A'
+                    }));
+                
+                    // get pager object for specified page
+                    const pager = paginate(placeData.meta.count, page);
+
+                    // get page of items from items array
+                    const pageOfItems = items.slice(0);
+                
+                    // return pager object and current page of items
+                    return res.json({ pager, pageOfItems });
+                }
+                else{
+                    logger.error('Wrong parameter!');
+                    return res.status(400).send({ error: 'Wrong parameter! Please go back and try again!'});
+                }
             }
-            else{
-                logger.error('Wrong parameter!');
-                return res.status(400).send({ error: 'Wrong parameter! Please go back and try again!'});
+            catch(err){
+                logger.error('Failed to call api. Error: '+ err);
+                logger.info(data)
+                return res.status(404).send({ error: 'Cannot get place data! Please wait and try again!'});
             }
         })
     })
@@ -91,7 +104,6 @@ function getOpenTime(open_hours, today_index){
             logger.error('Error: ' + err)
             open_time = 'unknown'
         }
-
     }
     else
         {open_time = 'unknown';}

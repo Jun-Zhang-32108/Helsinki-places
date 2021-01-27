@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useHistory } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
-import { UserTable, LoadButton } from '../components';
+import { UserTable } from '../components';
 
 class HomePage extends React.Component {
     constructor(props) {
@@ -9,8 +9,9 @@ class HomePage extends React.Component {
 
         this.state = {
             pager: {},      // Used to keep track of pagination related information 
-            pageOfItems: [] // For storing a list of place information
-        };
+            pageOfItems: [], // For storing a list of place information
+            status: 'ok'
+        };        
     }
 
     componentDidMount() {
@@ -21,25 +22,50 @@ class HomePage extends React.Component {
         this.loadPage();
     }
 
+    // shouldComponentUpdate(nextState, nextProps) {        
+    //     if (this.state.status !== nextProps.status) {
+    //         return true;
+    //       }
+    //       if (JSON.stringify(this.state.pager) !== JSON.stringify(nextProps.pager)) {
+    //         return true;
+    //       }
+    //       return false;
+    //     }
+
     loadPage() {
         // get page of items from api
         const params = new URLSearchParams(location.search);
         const page = parseInt(params.get('page')) || 1;
         if (page !== this.state.pager.currentPage) {
-            trackPromise(
-                fetch(`/api/items?page=${page}`, { method: 'GET' })
-                    .then(response => response.json())
-                    .then(({pager, pageOfItems}) => {
-                        this.setState({ pager, pageOfItems });
-                    }));
+            try{
+                trackPromise(
+                    fetch(`/api/items?page=${page}`, { method: 'GET' })
+                        .then(response => {
+                            let response_temp = response;
+                            let status; 
+                            if (response.ok)
+                            response.json()
+                            .then(({pager, pageOfItems}) => {
+                                status = 'ok'
+                                this.setState({ pager, pageOfItems, status});
+                            });
+                            else
+                            {
+                                status = response_temp.status;
+                                if (status != this.state.status)
+                                    this.setState({ status});
+                            }
+                        }));
+            }
+            catch(err){
+                console('Failed to call api. Error: '+ err);
+            }
         }
     }
 
-    render() {
-        const { pager, pageOfItems } = this.state;
-        return (
-            <div className="card text-center m-3">
-                <h3 className="card-header">Places in Helsinki</h3>
+    displayPlaceList(pageOfItems, pager){
+        return(
+            <div>
                 <div>
                     {/* Reader the list of places information as a table */}
                     <div>
@@ -50,7 +76,7 @@ class HomePage extends React.Component {
                     {pager.pages && pager.pages.length &&
                         <ul className="pagination">
                             <li className={`page-item first-item ${pager.currentPage === 1 ? 'disabled' : ''}`}>
-                                <Link to={{ search: `?page=1` }} className="page-link">First</Link>
+                                <Link to={{ search: `?page=1`} } className="page-link">First</Link>
                             </li>
                             <li className={`page-item previous-item ${pager.currentPage === 1 ? 'disabled' : ''}`}>
                                 <Link to={{ search: `?page=${pager.currentPage - 1}` }} className="page-link">Previous</Link>
@@ -61,7 +87,7 @@ class HomePage extends React.Component {
                                 </li>
                             )}
                             <li className={`page-item next-item ${pager.currentPage === pager.totalPages ? 'disabled' : ''}`}>
-                                <Link to={{ search: `?page=${pager.currentPage + 1}` }} className="page-link">Next</Link>
+                                <Link to={{ search: `?page=${pager.currentPage + 1}` } } className="page-link">Next</Link>
                             </li>
                             <li className={`page-item last-item ${pager.currentPage === pager.totalPages ? 'disabled' : ''}`}>
                                 <Link to={{ search: `?page=${pager.totalPages}` }} className="page-link">Last</Link>
@@ -69,6 +95,42 @@ class HomePage extends React.Component {
                         </ul>
                     }                    
                 </div>
+            </div>
+        );
+    }
+
+    wrongParameter(){
+        return(
+            <div>
+                <h3>Wrong parameters. Please change the page number and try again!</h3>
+            </div>
+        )
+    }
+
+    placeNotFound(){
+        return(
+            <div>
+                <h3>Cannot get place info! Please wait and try again!</h3>
+            </div>
+        )
+    }
+    
+
+    render() {
+        let show;
+        if(this.state.status == 'ok' || this.state.status == null)
+            show = this.displayPlaceList(this.state.pageOfItems, this.state.pager)
+        else
+            {
+                if(this.state.status == 400)
+                    show = this.wrongParameter()
+                else
+                    show = this.placeNotFound()
+            }
+        return (
+            <div className="card text-center m-3">
+                <h3 className="card-header">Places in Helsinki</h3>
+                {show}
             </div>
         );
     }
