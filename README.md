@@ -19,7 +19,7 @@ Start the backend in production mode :
 Notice that some values are passed as environment variables, which are saved in a .env file and I do not upload this file. So in order to take use run the backend, you need to create an .env file by yourself and define the values of PLACES_URL and PORT there. We use this [URL](http://open-api.myhelsinki.fi/doc#/v1places/listAll) and port 4000 by default.
 
 Then for the frontend :
-1. `cd front`
+1. `cd client`
 
 2. `yarn install`
 
